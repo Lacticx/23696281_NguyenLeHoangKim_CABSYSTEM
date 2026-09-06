@@ -121,3 +121,102 @@ Mục tiêu cốt lõi của dự án là loại bỏ sự phụ thuộc vào s�
 
 ---
 
+Để hiểu rõ cách các tác nhân (Khách hàng, Tài xế, Admin) tương tác với hệ thống CAB nhằm đạt được mục tiêu kinh doanh, chúng ta cần tiến hành **Mô hình hóa quy trình nghiệp vụ (Business Process Modeling)**.
+
+Dựa trên yêu cầu, hệ thống CAB có 4 nhóm quy trình chính:
+
+1. **Quy trình Đăng ký & Quản lý hồ sơ** (Khách hàng & Tài xế).
+2. **Quy trình Đặt xe, Điều phối & Thực hiện chuyến đi** (Đây là quy trình lõi - Core Process).
+3. **Quy trình Thanh toán & Đánh giá**.
+4. **Quy trình Vận hành & Hỗ trợ** (Dành cho Admin).
+
+Để tập trung vào xương sống của dự án, mình sẽ mô hình hóa **Quy trình Lõi: Từ lúc đặt xe đến khi hoàn thành thanh toán**.
+
+---
+
+### Sơ đồ luồng nghiệp vụ lõi (Sequence Diagram)
+
+Sơ đồ dưới đây thể hiện "Happy Path" (luồng thành công) và một số nhánh rẽ cơ bản (luồng từ chối/không tìm thấy tài xế) của quá trình đặt xe.
+
+```mermaid
+sequenceDiagram
+    autonumber
+    actor C as Khách hàng (Customer)
+    participant S as Hệ thống CAB (CAB System)
+    actor D as Tài xế (Driver)
+    participant P as Cổng thanh toán (Payment Gateway)
+
+    C->>S: Nhập điểm đón/đến, chọn loại xe
+    S-->>C: Tính toán & hiển thị cước phí, ETA
+    
+    C->>S: Xác nhận gửi yêu cầu đặt xe
+    
+    rect rgb(240, 248, 255)
+    note right of S: Vòng lặp: Tìm kiếm & Điều phối
+    S->>S: Quét tìm tài xế phù hợp gần nhất
+    S->>D: Gửi yêu cầu chuyến đi
+    
+    alt Tài xế từ chối / Không phản hồi (Timeout)
+        D-->>S: Từ chối / Bỏ qua
+        S->>S: Quay lại bước 4 (Tìm tài xế khác)
+    else Hết tài xế khả dụng
+        S-->>C: Thông báo không tìm được xe (Hủy yêu cầu)
+    else Tài xế chấp nhận
+        D->>S: Xác nhận nhận chuyến
+    end
+    end
+    
+    S-->>C: Thông báo tài xế đã nhận & hiển thị vị trí realtime
+    
+    rect rgb(255, 250, 240)
+    note right of S: Giai đoạn Thực hiện chuyến đi
+    D->>S: Cập nhật trạng thái "Đã đến điểm đón"
+    S-->>C: Gửi thông báo tài xế đã đến
+    D->>S: Cập nhật trạng thái "Đã đón khách & Đang di chuyển"
+    S-->>C: Cập nhật hành trình trên bản đồ
+    D->>S: Cập nhật trạng thái "Hoàn thành chuyến"
+    end
+
+    S->>S: Chốt cước phí thực tế cuối cùng
+    
+    rect rgb(245, 255, 250)
+    note right of S: Giai đoạn Thanh toán & Kết thúc
+    alt Thanh toán điện tử
+        S->>P: Gửi yêu cầu trừ tiền
+        P-->>S: Trả kết quả (Thành công / Thất bại)
+        alt Thất bại
+            S-->>C: Yêu cầu thanh toán lại / Chọn phương thức khác
+        end
+    end
+    
+    S-->>C: Gửi biên lai thanh toán thành công
+    S-->>D: Cập nhật thu nhập chuyến đi
+    C->>S: Gửi đánh giá tài xế (Rating & Review)
+    end
+
+```
+
+---
+
+### Phân tích chi tiết các bước trong Quy trình Lõi
+
+**1. Giai đoạn Yêu cầu (Request Phase):**
+
+* Khách hàng xác định lộ trình. Hệ thống gọi API Bản đồ (Map API) để tính toán quãng đường, thời gian dự kiến (ETA) và áp dụng **Business Rule tính cước** để báo giá trước cho khách.
+
+**2. Giai đoạn Điều phối (Dispatching Phase - *Core Engine*):**
+
+* Hệ thống liên tục chạy thuật toán quét các tài xế có trạng thái "Sẵn sàng" trong bán kính gần nhất.
+* *Ngoại lệ xử lý tự động:* Nếu tài xế A không nhận, hệ thống tự đẩy cho tài xế B, C... mà khách hàng không cần bấm đặt lại. Nếu quét cạn danh sách không có ai, hệ thống chủ động thông báo hủy để giải phóng khách hàng.
+
+**3. Giai đoạn Thực hiện (Execution Phase):**
+
+* Sự tương tác liên tục giữa ứng dụng của Tài xế (gửi tọa độ GPS, cập nhật trạng thái) và ứng dụng của Khách hàng (nhận tọa độ, hiển thị xe di chuyển).
+* Các điểm "chạm" (Touchpoints) này kích hoạt các luồng **Thông báo (Notification)** đẩy về máy khách hàng.
+
+**4. Giai đoạn Thanh toán (Payment Phase):**
+
+* Hệ thống chốt cước. Nếu khách dùng thẻ, CAB System gọi sang **Cổng thanh toán (Payment Gateway)**.
+* *Quy tắc bảo mật:* Hệ thống chỉ truyền đi Token giao dịch và số tiền, không truyền số thẻ thật. Nhận lại kết quả `Success` hoặc `Failed`.
+
+Việc mô hình hóa này giúp đội Dev hình dung rõ ràng thứ tự các hàm/API cần gọi, và giúp Tester biết cần tạo ra những kịch bản kiểm thử (Test cases) nào cho từng điểm rẽ nhánh.
