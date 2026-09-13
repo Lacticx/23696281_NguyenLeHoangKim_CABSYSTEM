@@ -1,12 +1,12 @@
 # PHÂN TÍCH NGHIỆP VỤ CAB SYSTEM – MVP
 
-> **Cơ sở phân tích:** tài liệu yêu cầu khách hàng về dự án **CAB System – Nền tảng đặt xe**, thời gian xây dựng 7 tuần. Tài liệu xác định 3 nhóm người dùng chính là khách hàng, tài xế và nhân viên vận hành; đồng thời yêu cầu hệ thống có khả năng mở rộng về sau. fileciteturn0file0L3-L10
+> **Cơ sở phân tích:** tài liệu yêu cầu khách hàng về dự án **CAB System – Nền tảng đặt xe**, thời gian xây dựng 7 tuần. Tài liệu xác định 3 nhóm người dùng chính là khách hàng, tài xế và nhân viên vận hành; đồng thời yêu cầu hệ thống có khả năng mở rộng về sau.
 >
 > **Phạm vi MVP theo đề bài:** chỉ tập trung vào **2 module chính**:
 > 1. **Quản lý khách hàng**
 > 2. **Quản lý tài xế**
 >
-> Các chức năng như thanh toán, báo cáo quản trị, đánh giá tài xế, thuật toán phân công thông minh... **chưa triển khai đầy đủ trong MVP**. Đây cũng phù hợp với tài liệu vì doanh nghiệp chưa chốt một số quy tắc chi tiết và mong muốn BA làm rõ trước khi phát triển. fileciteturn0file0L54-L59
+> Các chức năng như thanh toán, báo cáo quản trị, đánh giá tài xế, thuật toán phân công thông minh... **chưa triển khai đầy đủ trong MVP**. Đây cũng phù hợp với tài liệu vì doanh nghiệp chưa chốt một số quy tắc chi tiết và mong muốn BA làm rõ trước khi phát triển.
 
 ---
 
@@ -26,7 +26,7 @@
 | **Nhóm phát triển** | Xây dựng hệ thống dựa trên yêu cầu đã được phân tích và phê duyệt |
 | **Tester/QA** | Kiểm tra hệ thống dựa trên FR và AC; giai đoạn hiện tại chưa triển khai Test Case |
 
-Tài liệu gốc đặc biệt xác định **khách hàng, tài xế và nhân viên vận hành** là ba nhóm người dùng chính. fileciteturn0file0L11-L16
+Tài liệu gốc đặc biệt xác định **khách hàng, tài xế và nhân viên vận hành** là ba nhóm người dùng chính.
 
 ---
 
@@ -70,8 +70,7 @@ quadrantChart
     "Notification Provider": [0.25, 0.35]
 ```
 
-> **Nhận xét:** Nhóm cần BA quan tâm cao nhất là **Ban lãnh đạo – Nhân viên vận hành – Khách hàng – Tài xế**, vì đây là những bên trực tiếp quyết định hoặc sử dụng hệ thống. Tài liệu cũng yêu cầu hệ thống phải hỗ trợ phối hợp giữa các bộ phận và có dữ liệu để theo dõi hoạt động. fileciteturn0file0L60-L66
-
+> **Nhận xét:** Nhóm cần BA quan tâm cao nhất là **Ban lãnh đạo – Nhân viên vận hành – Khách hàng – Tài xế**, vì đây là những bên trực tiếp quyết định hoặc sử dụng hệ thống. Tài liệu cũng yêu cầu hệ thống phải hỗ trợ phối hợp giữa các bộ phận và có dữ liệu để theo dõi hoạt động.
 ---
 
 # B3. Chuyển đổi yêu cầu khách hàng thành Business Goals – BR
@@ -90,7 +89,7 @@ Từ yêu cầu ban đầu, có thể chuyển thành **9 Business Requirements 
 | **BR-08** | Theo dõi trạng thái yêu cầu/chuyến | Cho phép khách hàng biết tình trạng xử lý yêu cầu |
 | **BR-09** | Quản lý lịch sử sử dụng dịch vụ | Lưu lại các yêu cầu/chuyến của khách hàng để tra cứu |
 
-Các BR trên được rút ra từ những yêu cầu về đăng ký, cập nhật thông tin, nhập điểm đón/điểm đến, lựa chọn loại xe, theo dõi tài xế/chuyến và lịch sử chuyến đi trong tài liệu. fileciteturn0file0L11-L16
+Các BR trên được rút ra từ những yêu cầu về đăng ký, cập nhật thông tin, nhập điểm đón/điểm đến, lựa chọn loại xe, theo dõi tài xế/chuyến và lịch sử chuyến đi trong tài liệu.
 
 ---
 
@@ -126,7 +125,7 @@ Phạm vi:
 - Chấp nhận/từ chối chuyến.
 - Cập nhật trạng thái chuyến.
 
-Tài liệu yêu cầu tài xế có hồ sơ, thông tin phương tiện và trạng thái hoạt động; khi có yêu cầu phù hợp thì tài xế có thể chấp nhận hoặc từ chối. fileciteturn0file0L17-L22
+Tài liệu yêu cầu tài xế có hồ sơ, thông tin phương tiện và trạng thái hoạt động; khi có yêu cầu phù hợp thì tài xế có thể chấp nhận hoặc từ chối. 
 
 ## 2. Ngoài phạm vi MVP
 
@@ -143,7 +142,7 @@ Tài liệu yêu cầu tài xế có hồ sơ, thông tin phương tiện và tr
 | Quản lý khiếu nại nâng cao | ❌ |
 | Phân tích dữ liệu | ❌ |
 
-Lý do loại khỏi MVP là tài liệu mô tả đây là những năng lực của nền tảng CAB đầy đủ hoặc các yêu cầu phát triển về sau, trong khi MVP được giới hạn để đảm bảo hệ thống hoạt động trước. fileciteturn0file0L29-L44
+Lý do loại khỏi MVP là tài liệu mô tả đây là những năng lực của nền tảng CAB đầy đủ hoặc các yêu cầu phát triển về sau, trong khi MVP được giới hạn để đảm bảo hệ thống hoạt động trước.
 
 ---
 
@@ -199,7 +198,7 @@ Ví dụ:
 Hoàn thành
 ```
 
-Tài liệu cũng yêu cầu khách hàng biết hệ thống đang tìm tài xế, tài xế nào nhận chuyến và trạng thái hiện tại. fileciteturn0file0L13-L16
+Tài liệu cũng yêu cầu khách hàng biết hệ thống đang tìm tài xế, tài xế nào nhận chuyến và trạng thái hiện tại.
 
 ## BR-09 – Lịch sử chuyến
 
@@ -252,7 +251,7 @@ flowchart TD
     E --> F[Tài xế có tài khoản]
 ```
 
-Trong tài liệu, tài xế có thể đăng ký hoặc được nhân viên vận hành tạo tài khoản. fileciteturn0file0L17-L18
+Trong tài liệu, tài xế có thể đăng ký hoặc được nhân viên vận hành tạo tài khoản.
 
 ---
 
@@ -387,7 +386,7 @@ flowchart TD
 | **FR-DRV-10** | Cho phép tài xế từ chối yêu cầu | BR-07 |
 | **FR-DRV-11** | Cho phép tài xế cập nhật trạng thái chuyến | BR-08 |
 
-Tài liệu yêu cầu tài xế phải có khả năng cập nhật trạng thái như đã đến điểm đón, đã đón khách, đang di chuyển và hoàn thành chuyến. fileciteturn0file0L19-L22
+Tài liệu yêu cầu tài xế phải có khả năng cập nhật trạng thái như đã đến điểm đón, đã đón khách, đang di chuyển và hoàn thành chuyến.
 
 ---
 
@@ -408,7 +407,7 @@ Tài liệu yêu cầu tài xế phải có khả năng cập nhật trạng th�
 | **BRULE-09** | Tài khoản đã bị khóa/ngừng hoạt động không được đăng nhập sử dụng chức năng yêu cầu tài khoản |
 | **BRULE-10** | Các thao tác thay đổi thông tin quan trọng phải được lưu vết |
 
-Một số rule như thời gian tài xế phải phản hồi, chính sách hủy, mất kết nối, cách tính cước và thời gian lưu trữ **chưa được khách hàng chốt trong tài liệu**, vì vậy cần ghi nhận là **Pending BA Clarification**, không nên tự ý xem là yêu cầu chính thức. fileciteturn0file0L54-L56
+Một số rule như thời gian tài xế phải phản hồi, chính sách hủy, mất kết nối, cách tính cước và thời gian lưu trữ **chưa được khách hàng chốt trong tài liệu**, vì vậy cần ghi nhận là **Pending BA Clarification**, không nên tự ý xem là yêu cầu chính thức.
 
 ---
 
@@ -426,7 +425,7 @@ Một số rule như thời gian tài xế phải phản hồi, chính sách h�
 | **NFR-08** | **Maintainability:** có thể triển khai chức năng mới từng phần mà hạn chế ảnh hưởng đến chức năng đang hoạt động |
 | **NFR-09** | **Extensibility:** kiến trúc phải cho phép bổ sung loại dịch vụ, phương thức thanh toán và nhà cung cấp thông báo trong tương lai |
 
-Các yêu cầu này xuất phát trực tiếp từ phần ổn định, mở rộng, bảo mật và khả năng phát triển lâu dài trong tài liệu. fileciteturn0file0L46-L59
+Các yêu cầu này xuất phát trực tiếp từ phần ổn định, mở rộng, bảo mật và khả năng phát triển lâu dài trong tài liệu.
 
 ---
 
@@ -783,7 +782,7 @@ Notification đa kênh
 Phân tích hiệu quả tài xế
 ```
 
-Điều này giữ đúng tinh thần **“giai đoạn này không cần tài xế tốt mà chỉ cần hệ thống hoạt động”**: MVP ưu tiên chứng minh được luồng nghiệp vụ cốt lõi **Khách hàng → Yêu cầu → Xe/Tài xế → Chuyến**, thay vì cố xây dựng ngay một hệ thống CAB hoàn chỉnh. Tài liệu gốc cũng xác định mục tiêu dài hạn là một nền tảng có thể phát triển thêm tính năng, trong khi BA phải làm rõ các điểm chưa chốt trước khi nhóm phát triển triển khai. fileciteturn0file0L60-L66
+Điều này giữ đúng tinh thần **“giai đoạn này không cần tài xế tốt mà chỉ cần hệ thống hoạt động”**: MVP ưu tiên chứng minh được luồng nghiệp vụ cốt lõi **Khách hàng → Yêu cầu → Xe/Tài xế → Chuyến**, thay vì cố xây dựng ngay một hệ thống CAB hoàn chỉnh. Tài liệu gốc cũng xác định mục tiêu dài hạn là một nền tảng có thể phát triển thêm tính năng, trong khi BA phải làm rõ các điểm chưa chốt trước khi nhóm phát triển triển khai.
 
 ### Các điểm cần BA xác nhận trước khi khóa yêu cầu
 
@@ -796,4 +795,4 @@ Phân tích hiệu quả tài xế
 | Xử lý mất mạng | **Chưa chốt** |
 | Thời gian lưu trữ dữ liệu | **Chưa chốt** |
 
-Đây là các điểm được tài liệu nêu rõ là doanh nghiệp hiện chưa chốt và cần BA làm rõ với stakeholder. fileciteturn0file0L54-L56
+Đây là các điểm được tài liệu nêu rõ là doanh nghiệp hiện chưa chốt và cần BA làm rõ với stakeholder.
