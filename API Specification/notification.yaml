@@ -1,0 +1,178 @@
+openapi: 3.0.3
+info:
+  title: CAB System - Notification API
+  version: 1.0.0
+  description: Notification API scaffold for future extensibility. Notification is
+    not a core MVP entity in the current ERD.
+servers:
+- url: http://localhost:3000/api/v1
+  description: Local development server
+tags:
+- name: Notifications
+paths:
+  /notifications:
+    get:
+      tags:
+      - Notifications
+      summary: List notifications for current user
+      security:
+      - bearerAuth: []
+      parameters:
+      - name: page
+        in: query
+        schema:
+          type: integer
+          minimum: 1
+          default: 1
+      - name: limit
+        in: query
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 100
+          default: 20
+      - name: is_read
+        in: query
+        schema:
+          type: boolean
+      responses:
+        '200':
+          description: Notifications
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotificationList'
+  /notifications/{notificationId}/read:
+    parameters:
+    - name: notificationId
+      in: path
+      required: true
+      schema:
+        type: integer
+        format: int64
+    patch:
+      tags:
+      - Notifications
+      summary: Mark notification as read/unread
+      security:
+      - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MarkReadRequest'
+      responses:
+        '200':
+          description: Updated
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Notification'
+        '404':
+          description: Notification not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /notifications/read-all:
+    post:
+      tags:
+      - Notifications
+      summary: Mark all notifications as read
+      security:
+      - bearerAuth: []
+      responses:
+        '204':
+          description: All notifications marked as read
+components:
+  schemas:
+    Error:
+      type: object
+      required:
+      - code
+      - message
+      properties:
+        code:
+          type: string
+          example: VALIDATION_ERROR
+        message:
+          type: string
+          example: Request data is invalid
+        details:
+          type: object
+          additionalProperties: true
+    Notification:
+      type: object
+      required:
+      - notification_id
+      - user_id
+      - title
+      - message
+      - type
+      - is_read
+      - created_at
+      properties:
+        notification_id:
+          type: integer
+          format: int64
+          example: 6001
+        user_id:
+          type: integer
+          format: int64
+          example: 1001
+        title:
+          type: string
+          example: Trip accepted
+        message:
+          type: string
+          example: Driver Tran Van B has accepted your trip.
+        type:
+          type: string
+          enum:
+          - trip
+          - account
+          - system
+          example: trip
+        is_read:
+          type: boolean
+          default: false
+        created_at:
+          type: string
+          format: date-time
+    NotificationList:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Notification'
+        page:
+          type: integer
+          minimum: 1
+        limit:
+          type: integer
+          minimum: 1
+          maximum: 100
+        total:
+          type: integer
+          minimum: 0
+    MarkReadRequest:
+      type: object
+      required:
+      - is_read
+      properties:
+        is_read:
+          type: boolean
+          example: true
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+externalDocs:
+  description: CAB System SRS on GitHub
+  url: https://github.com/Lacticx/23696281_NguyenLeHoangKim_CABSYSTEM/blob/main/srs.md

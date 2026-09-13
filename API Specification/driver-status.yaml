@@ -1,0 +1,122 @@
+openapi: 3.0.3
+info:
+  title: CAB System - Driver Status API
+  version: 1.0.0
+  description: Driver availability status APIs based on BR-05 and BRULE-07.
+servers:
+- url: http://localhost:3000/api/v1
+  description: Local development server
+tags:
+- name: Driver Status
+paths:
+  /drivers/{driverId}/status:
+    parameters:
+    - name: driverId
+      in: path
+      required: true
+      schema:
+        type: integer
+        format: int64
+    get:
+      tags:
+      - Driver Status
+      summary: Get current driver status
+      security:
+      - bearerAuth: []
+      responses:
+        '200':
+          description: Current status
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DriverStatusResponse'
+        '404':
+          description: Driver not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    put:
+      tags:
+      - Driver Status
+      summary: Update driver status
+      security:
+      - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StatusUpdateRequest'
+      responses:
+        '200':
+          description: Status updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DriverStatusResponse'
+        '409':
+          description: Driver cannot become available without valid vehicle
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: Invalid status
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+components:
+  schemas:
+    Error:
+      type: object
+      required:
+      - code
+      - message
+      properties:
+        code:
+          type: string
+          example: VALIDATION_ERROR
+        message:
+          type: string
+          example: Request data is invalid
+        details:
+          type: object
+          additionalProperties: true
+    DriverStatus:
+      type: string
+      enum:
+      - available
+      - unavailable
+      - offline
+      default: offline
+    DriverStatusResponse:
+      type: object
+      required:
+      - driver_id
+      - status
+      properties:
+        driver_id:
+          type: integer
+          format: int64
+        status:
+          $ref: '#/components/schemas/DriverStatus'
+        changed_at:
+          type: string
+          format: date-time
+    StatusUpdateRequest:
+      type: object
+      required:
+      - status
+      properties:
+        status:
+          $ref: '#/components/schemas/DriverStatus'
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+externalDocs:
+  description: CAB System SRS on GitHub
+  url: https://github.com/Lacticx/23696281_NguyenLeHoangKim_CABSYSTEM/blob/main/srs.md
