@@ -1,0 +1,428 @@
+openapi: 3.0.3
+info:
+  title: CAB System - Payment API
+  version: 1.0.0
+  description: Payment API for future extension. The current CAB System SRS excludes
+    electronic payment and Payment Gateway integration from the MVP.
+servers:
+- url: http://localhost:3000/api/v1
+  description: Local development server
+tags:
+- name: Payments
+  description: Payment management APIs
+paths:
+  /payments:
+    get:
+      tags:
+      - Payments
+      summary: List payments
+      security:
+      - bearerAuth: []
+      parameters:
+      - name: page
+        in: query
+        schema:
+          type: integer
+          minimum: 1
+          default: 1
+      - name: limit
+        in: query
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 100
+          default: 20
+      - name: customer_id
+        in: query
+        schema:
+          type: integer
+          format: int64
+      - name: trip_id
+        in: query
+        schema:
+          type: integer
+          format: int64
+      - name: status
+        in: query
+        schema:
+          $ref: '#/components/schemas/PaymentStatus'
+      responses:
+        '200':
+          description: Payment list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaymentList'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    post:
+      tags:
+      - Payments
+      summary: Create payment
+      security:
+      - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PaymentCreate'
+      responses:
+        '201':
+          description: Payment created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaymentResponse'
+        '409':
+          description: A payment already exists for the trip
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /payments/{paymentId}:
+    parameters:
+    - name: paymentId
+      in: path
+      required: true
+      schema:
+        type: integer
+        format: int64
+    get:
+      tags:
+      - Payments
+      summary: Get payment by ID
+      security:
+      - bearerAuth: []
+      responses:
+        '200':
+          description: Payment
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaymentResponse'
+        '404':
+          description: Payment not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    put:
+      tags:
+      - Payments
+      summary: Update payment
+      security:
+      - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PaymentUpdate'
+      responses:
+        '200':
+          description: Payment updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaymentResponse'
+        '404':
+          description: Payment not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Invalid payment state transition
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    patch:
+      tags:
+      - Payments
+      summary: Partially update payment
+      security:
+      - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PaymentUpdate'
+      responses:
+        '200':
+          description: Payment updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaymentResponse'
+        '404':
+          description: Payment not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    delete:
+      tags:
+      - Payments
+      summary: Cancel payment
+      security:
+      - bearerAuth: []
+      responses:
+        '204':
+          description: Payment cancelled
+        '404':
+          description: Payment not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Payment cannot be cancelled in its current state
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /payments/{paymentId}/status:
+    parameters:
+    - name: paymentId
+      in: path
+      required: true
+      schema:
+        type: integer
+        format: int64
+    patch:
+      tags:
+      - Payments
+      summary: Update payment status
+      security:
+      - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PaymentStatusUpdate'
+      responses:
+        '200':
+          description: Payment status updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaymentResponse'
+        '404':
+          description: Payment not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Invalid payment state transition
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+components:
+  schemas:
+    Error:
+      type: object
+      required:
+      - code
+      - message
+      properties:
+        code:
+          type: string
+          example: PAYMENT_NOT_FOUND
+        message:
+          type: string
+          example: Payment was not found
+        details:
+          type: object
+          additionalProperties: true
+    PaymentStatus:
+      type: string
+      enum:
+      - pending
+      - paid
+      - failed
+      - refunded
+      - cancelled
+      default: pending
+    PaymentMethod:
+      type: string
+      enum:
+      - cash
+      - card
+      - ewallet
+      description: Provisional future-extension values; confirm with BA before implementation.
+    Payment:
+      type: object
+      required:
+      - payment_id
+      - customer_id
+      - trip_id
+      - amount
+      - currency
+      - status
+      - created_at
+      - updated_at
+      properties:
+        payment_id:
+          type: integer
+          format: int64
+          example: 7001
+        customer_id:
+          type: integer
+          format: int64
+          example: 1001
+        trip_id:
+          type: integer
+          format: int64
+          example: 4001
+        amount:
+          type: number
+          format: double
+          minimum: 0
+          example: 85000
+        currency:
+          type: string
+          minLength: 3
+          maxLength: 3
+          example: VND
+        method:
+          $ref: '#/components/schemas/PaymentMethod'
+        provider:
+          type: string
+          nullable: true
+          example: PaymentGateway
+        transaction_id:
+          type: string
+          nullable: true
+          example: TXN-20260913-0001
+        status:
+          $ref: '#/components/schemas/PaymentStatus'
+        paid_at:
+          type: string
+          format: date-time
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+    PaymentCreate:
+      type: object
+      required:
+      - customer_id
+      - trip_id
+      - amount
+      - currency
+      properties:
+        customer_id:
+          type: integer
+          format: int64
+        trip_id:
+          type: integer
+          format: int64
+        amount:
+          type: number
+          format: double
+          minimum: 0
+        currency:
+          type: string
+          minLength: 3
+          maxLength: 3
+          default: VND
+        method:
+          $ref: '#/components/schemas/PaymentMethod'
+        provider:
+          type: string
+          nullable: true
+    PaymentUpdate:
+      type: object
+      minProperties: 1
+      properties:
+        amount:
+          type: number
+          format: double
+          minimum: 0
+        currency:
+          type: string
+          minLength: 3
+          maxLength: 3
+        method:
+          $ref: '#/components/schemas/PaymentMethod'
+        provider:
+          type: string
+          nullable: true
+        transaction_id:
+          type: string
+          nullable: true
+        status:
+          $ref: '#/components/schemas/PaymentStatus'
+    PaymentStatusUpdate:
+      type: object
+      required:
+      - status
+      properties:
+        status:
+          $ref: '#/components/schemas/PaymentStatus'
+        transaction_id:
+          type: string
+          nullable: true
+        paid_at:
+          type: string
+          format: date-time
+          nullable: true
+    PaymentResponse:
+      type: object
+      required:
+      - data
+      properties:
+        data:
+          $ref: '#/components/schemas/Payment'
+    PaymentList:
+      type: object
+      required:
+      - data
+      - page
+      - limit
+      - total
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Payment'
+        page:
+          type: integer
+          minimum: 1
+          example: 1
+        limit:
+          type: integer
+          minimum: 1
+          maximum: 100
+          example: 20
+        total:
+          type: integer
+          minimum: 0
+          example: 12
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+externalDocs:
+  description: CAB System SRS on GitHub
+  url: https://github.com/Lacticx/23696281_NguyenLeHoangKim_CABSYSTEM/blob/main/srs.md
