@@ -1,0 +1,307 @@
+openapi: 3.0.3
+info:
+  title: CAB System - Driver API
+  version: 1.0.0
+  description: Driver account and profile APIs based on FR-DRV-01 to FR-DRV-04.
+servers:
+- url: http://localhost:3000/api/v1
+  description: Local development server
+tags:
+- name: Drivers
+paths:
+  /drivers:
+    get:
+      tags:
+      - Drivers
+      summary: List drivers
+      security:
+      - bearerAuth: []
+      parameters:
+      - name: page
+        in: query
+        schema:
+          type: integer
+          minimum: 1
+          default: 1
+      - name: limit
+        in: query
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 100
+          default: 20
+      - name: status
+        in: query
+        schema:
+          type: string
+          enum:
+          - active
+          - inactive
+          - locked
+      - name: search
+        in: query
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Driver list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DriverList'
+    post:
+      tags:
+      - Drivers
+      summary: Create driver
+      security:
+      - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DriverCreate'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Driver'
+        '409':
+          description: Duplicate email or phone
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /drivers/{driverId}:
+    parameters:
+    - name: driverId
+      in: path
+      required: true
+      schema:
+        type: integer
+        format: int64
+    get:
+      tags:
+      - Drivers
+      summary: Get driver
+      security:
+      - bearerAuth: []
+      responses:
+        '200':
+          description: Driver
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Driver'
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    put:
+      tags:
+      - Drivers
+      summary: Replace driver
+      security:
+      - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DriverUpdate'
+      responses:
+        '200':
+          description: Updated
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Driver'
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    patch:
+      tags:
+      - Drivers
+      summary: Partially update driver
+      security:
+      - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DriverUpdate'
+      responses:
+        '200':
+          description: Updated
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Driver'
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    delete:
+      tags:
+      - Drivers
+      summary: Deactivate driver
+      security:
+      - bearerAuth: []
+      responses:
+        '204':
+          description: Deactivated
+        '404':
+          description: Not found
+components:
+  schemas:
+    Error:
+      type: object
+      required:
+      - code
+      - message
+      properties:
+        code:
+          type: string
+          example: VALIDATION_ERROR
+        message:
+          type: string
+          example: Request data is invalid
+        details:
+          type: object
+          additionalProperties: true
+    Driver:
+      type: object
+      required:
+      - driver_id
+      - full_name
+      - phone
+      - email
+      - status
+      - created_at
+      - updated_at
+      properties:
+        driver_id:
+          type: integer
+          format: int64
+          example: 2001
+        full_name:
+          type: string
+          minLength: 2
+          maxLength: 100
+          example: Tran Van B
+        phone:
+          type: string
+          pattern: ^0\d{9}$
+          example: 0987654321
+        email:
+          type: string
+          format: email
+          example: tranvanb@example.com
+        status:
+          type: string
+          enum:
+          - active
+          - inactive
+          - locked
+          default: active
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+    DriverCreate:
+      type: object
+      required:
+      - full_name
+      - phone
+      - email
+      - password
+      properties:
+        full_name:
+          type: string
+          minLength: 2
+          maxLength: 100
+        phone:
+          type: string
+          pattern: ^0\d{9}$
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+          format: password
+          minLength: 8
+          maxLength: 72
+    DriverUpdate:
+      type: object
+      properties:
+        full_name:
+          type: string
+          minLength: 2
+          maxLength: 100
+        phone:
+          type: string
+          pattern: ^0\d{9}$
+        email:
+          type: string
+          format: email
+        status:
+          type: string
+          enum:
+          - active
+          - inactive
+          - locked
+      minProperties: 1
+    DriverList:
+      type: object
+      required:
+      - data
+      - page
+      - limit
+      - total
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Driver'
+        page:
+          type: integer
+          minimum: 1
+        limit:
+          type: integer
+          minimum: 1
+          maximum: 100
+        total:
+          type: integer
+          minimum: 0
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+externalDocs:
+  description: CAB System SRS on GitHub
+  url: https://github.com/Lacticx/23696281_NguyenLeHoangKim_CABSYSTEM/blob/main/srs.md
