@@ -161,28 +161,3 @@ Cấu trúc mỗi Test Case gồm 8 cột:
 | TC_TRIP_018 | Nhận & hoàn thành chuyến | Khách hàng thấy trạng thái đang thực hiện | Driver đang IN_PROGRESS | Customer refresh | R01=IN_PROGRESS | Hiển thị đúng trạng thái đang thực hiện | High |
 | TC_TRIP_019 | Nhận & hoàn thành chuyến | Khách hàng thấy chuyến hoàn thành trong lịch sử | Trip completed | Customer mở History | R01=COMPLETED | Chuyến xuất hiện trong lịch sử của chính customer | High |
 | TC_TRIP_020 | Nhận & hoàn thành chuyến | Người dùng xem lịch sử của customer khác | Customer A login | Truy vấn ride của B | customer_A ≠ customer_B | Không được xem dữ liệu lịch sử của B | High |
-
----
-
-# 7. Ma trận kiểm tra theo 5 tiêu chí
-
-| Scenario | Positive | Negative | Boundary | Rỗng | Sai format |
-|---|---:|---:|---:|---:|---:|
-| TS-01 Đăng ký & đăng nhập | Có | Có | Có | Có | Có |
-| TS-02 Driver → Available | Có | Có | Có | Có | Có |
-| TS-03 Tạo request & chọn tài xế | Có | Có | Có | Có | Có |
-| TS-04 Driver mất Available trước Confirm | Có | Có | Có | Có | Có |
-| TS-05 Nhận → thực hiện → hoàn thành | Có | Có | Có | Có | Có |
-| **Tổng** | **Có** | **Có** | **Có** | **Có** | **Có** |
-
----
-
-# 8. Danh sách Test Scenario
-
-1. **TS-01:** Đăng ký và đăng nhập tài khoản khách hàng.
-2. **TS-02:** Tài xế cập nhật phương tiện và chuyển sang Available.
-3. **TS-03:** Khách hàng tạo yêu cầu đặt xe và lựa chọn tài xế/xe.
-4. **TS-04:** Tài xế không còn khả dụng trước khi khách hàng xác nhận.
-5. **TS-05:** Tài xế nhận chuyến, cập nhật trạng thái và hoàn thành.
-
-**Tổng số Test Case: 100.**
